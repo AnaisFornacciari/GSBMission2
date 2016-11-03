@@ -2,7 +2,8 @@
 use Symfony\Component\HttpFoundation\Request;
 use Silex\Application;
 
-class CouteauSuisse{
+class CouteauSuisse
+{
 /**
  * Enregistre dans une variable session les infos d'un visiteur
  
@@ -10,7 +11,8 @@ class CouteauSuisse{
  * @param $nom
  * @param $prenom
  */
-    public function connecter($id,$nom,$prenom){
+    public function connecter($id,$nom,$prenom)
+    {
 	$_SESSION['idVisiteur']= $id; 
 	$_SESSION['nom']= $nom;
 	$_SESSION['prenom']= $prenom;
@@ -19,22 +21,25 @@ class CouteauSuisse{
  * Teste si un quelconque visiteur est connecté
  * @return vrai ou faux 
  */
-    public  function estConnecte(){
+    public  function estConnecte()
+    {
         return isset($_SESSION['idVisiteur']);
     }
  /**
  * Détruit la session active
  */
-    public function deconnecter(){
+    public function deconnecter()
+    {
 	session_destroy();
-}
+    }
 /**
  * Transforme une date au format français jj/mm/aaaa vers le format anglais aaaa-mm-jj
  
  * @param $madate au format  jj/mm/aaaa
  * @return la date au format anglais aaaa-mm-jj
 */
-    public function dateFrancaisVersAnglais($maDate){
+    public function dateFrancaisVersAnglais($maDate)
+    {
 	@list($jour,$mois,$annee) = explode('/',$maDate);
 	return date('Y-m-d',mktime(0,0,0,$mois,$jour,$annee));
     }
@@ -44,7 +49,8 @@ class CouteauSuisse{
  * @param $madate au format  aaaa-mm-jj
  * @return la date au format format français jj/mm/aaaa
 */
-    public function dateAnglaisVersFrancais($maDate){
+    public function dateAnglaisVersFrancais($maDate)
+    {
        @list($annee,$mois,$jour)=explode('-',$maDate);
        $date="$jour"."/".$mois."/".$annee;
        return $date;
@@ -55,12 +61,14 @@ class CouteauSuisse{
  * @param $date au format  jj/mm/aaaa
  * @return le mois au format aaaamm
 */
-    public function getMois($date){
-            @list($jour,$mois,$annee) = explode('/',$date);
-            if(strlen($mois) == 1){
-                    $mois = "0".$mois;
-            }
-            return $annee.$mois;
+    public function getMois($date)
+    {
+        @list($jour,$mois,$annee) = explode('/',$date);
+        if(strlen($mois) == 1)
+        {
+            $mois = "0".$mois;
+        }
+        return $annee.$mois;
     }
 
 /* gestion des erreurs*/
@@ -70,63 +78,76 @@ class CouteauSuisse{
  * @param $valeur
  * @return vrai ou faux
 */
-    public function estEntierPositif($valeur) {
-            return preg_match("/[^0-9]/", $valeur) == 0;
+    public function estEntierPositif($valeur)
+    {
+        return preg_match("/[^0-9]/", $valeur) == 0;
 
     }
 
-    /**
-     * Indique si un tableau de valeurs est constitué d'entiers positifs ou nuls
+/**
+ * Indique si un tableau de valeurs est constitué d'entiers positifs ou nuls
 
-     * @param $tabEntiers : le tableau
-     * @return vrai ou faux
-    */
-    public function estTableauEntiers($tabEntiers) {
-            $ok = true;
-            foreach($tabEntiers as $unEntier){
-                    if(!$this->estEntierPositif($unEntier)){
-                            $ok = false; 
-                    }
+ * @param $tabEntiers : le tableau
+* @return vrai ou faux
+*/
+    public function estTableauEntiers($tabEntiers)
+    {
+        $ok = true;
+        foreach($tabEntiers as $unEntier)
+        {
+            if(!$this->estEntierPositif($unEntier))
+            {
+                $ok = false; 
             }
-            return $ok;
+        }
+        return $ok;
     }
+    
 /**
  * Vérifie si une date est inférieure d'un an à la date actuelle
  
  * @param $dateTestee 
  * @return vrai ou faux
 */
-    public function estDateDepassee($dateTestee){
-            $dateActuelle=date("d/m/Y");
-            @list($jour,$mois,$annee) = explode('/',$dateActuelle);
-            $annee--;
-            $AnPasse = $annee.$mois.$jour;
-            @list($jourTeste,$moisTeste,$anneeTeste) = explode('/',$dateTestee);
-            return ($anneeTeste.$moisTeste.$jourTeste < $AnPasse); 
+    public function estDateDepassee($dateTestee)
+    {
+        $dateActuelle=date("d/m/Y");
+        @list($jour,$mois,$annee) = explode('/',$dateActuelle);
+        $annee--;
+        $AnPasse = $annee.$mois.$jour;
+        @list($jourTeste,$moisTeste,$anneeTeste) = explode('/',$dateTestee);
+        return ($anneeTeste.$moisTeste.$jourTeste < $AnPasse); 
     }
+    
 /**
  * Vérifie la validité du format d'une date française jj/mm/aaaa 
  
  * @param $date 
  * @return vrai ou faux
 */
-    public function estDateValide($date){
-            $tabDate = explode('/',$date);
-            $dateOK = true;
-            if (count($tabDate) != 3) {
+    public function estDateValide($date)
+    {
+        $tabDate = explode('/',$date);
+        $dateOK = true;
+        if (count($tabDate) != 3)
+        {
+            $dateOK = false;
+        }
+        else
+        {
+            if (!$this->estTableauEntiers($tabDate))
+            {
                 $dateOK = false;
+            }
+            else 
+            {
+                if (!checkdate($tabDate[1], $tabDate[0], $tabDate[2]))
+                {
+                    $dateOK = false;
+                }
+            }
         }
-        else {
-                    if (!$this->estTableauEntiers($tabDate)) {
-                            $dateOK = false;
-                    }
-                    else {
-                            if (!checkdate($tabDate[1], $tabDate[0], $tabDate[2])) {
-                                    $dateOK = false;
-                            }
-                    }
-        }
-            return $dateOK;
+        return $dateOK;
     }
 
 /**
@@ -135,9 +156,11 @@ class CouteauSuisse{
  * @param $lesFrais 
  * @return vrai ou faux
 */
-    function lesQteFraisValides($lesFrais){
+    function lesQteFraisValides($lesFrais)
+    {
             return $this->estTableauEntiers($lesFrais);
     }
+    
 /**
  * Vérifie la validité des trois arguments : la date, le libellé du frais et le montant 
  
@@ -147,31 +170,40 @@ class CouteauSuisse{
  * @param $libelle 
  * @param $montant
  */
-    function valideInfosFrais($dateFrais,$libelle,$montant){
-            if($dateFrais==""){
-                    $this->ajouterErreur("Le champ date ne doit pas être vide");
-            }
-            else{
-                    if(!$this->estDatevalide($dateFrais)){
-                            $this->ajouterErreur("Date invalide");
-                    }	
-                    else{
-                            if(estDateDepassee($dateFrais)){
-                                    $this->ajouterErreur("date d'enregistrement du frais dépassé, plus de 1 an");
-                            }			
-                    }
-            }
-            if($libelle == ""){
-                    $this->ajouterErreur("Le champ description ne peut pas être vide");
-            }
-            if($montant == ""){
-                    $this->ajouterErreur("Le champ montant ne peut pas être vide");
-            }
+    function valideInfosFrais($dateFrais,$libelle,$montant)
+    {
+        if($dateFrais=="")
+        {
+            $this->ajouterErreur("Le champ date ne doit pas être vide");
+        }
+        else
+        {
+            if(!$this->estDatevalide($dateFrais))
+            {
+                $this->ajouterErreur("Date invalide");
+            }	
             else
-                    if( !is_numeric($montant) ){
-                            $this->ajouterErreur("Le champ montant doit être numérique");
-                    }
+            {
+                if(estDateDepassee($dateFrais))
+                {
+                    $this->ajouterErreur("date d'enregistrement du frais dépassé, plus de 1 an");
+                }			
+            }
+        }
+        if($libelle == "")
+        {
+            $this->ajouterErreur("Le champ description ne peut pas être vide");
+        }
+        if($montant == "")
+        {
+            $this->ajouterErreur("Le champ montant ne peut pas être vide");
+        }
+        else if( !is_numeric($montant) )
+        {
+            $this->ajouterErreur("Le champ montant doit être numérique");
+        }
     }
+    
 /**
  * Ajoute le libellé d'une erreur au tableau des erreurs 
  
@@ -183,26 +215,31 @@ class CouteauSuisse{
             } 
        $_REQUEST['erreurs'][]=$msg;
     }
+    
 /**
  * Retoune le nombre de lignes du tableau des erreurs 
  
  * @return le nombre d'erreurs
  */
-    function nbErreurs(){
-       if (!isset($_REQUEST['erreurs'])){
-               return 0;
-            }
-            else{
-               return count($_REQUEST['erreurs']);
-            }
-        }   
-   }
+    function nbErreurs()
+    {
+       if (!isset($_REQUEST['erreurs']))
+        {
+            return 0;
+        }
+        else
+        {
+            return count($_REQUEST['erreurs']);
+        }
+    }   
+}
 
 /*------------------------Fin classe---------------------------*/
 
 /*------------------------Création du service--------------------*/
 
-$app['couteauSuisse'] = function ()  {
+$app['couteauSuisse'] = function ()
+{
     return new CouteauSuisse();
 };
 
