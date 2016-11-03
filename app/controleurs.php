@@ -243,7 +243,7 @@ Class ValiderFicheFraisControleur
             // les mois étant triés décroissants
             $lesCles = array_keys( $lesMois );
             $moisASelectionner = $lesCles[0];
-            require_once __DIR__.'/../vues/v_listeMois.php';
+            require_once __DIR__.'/../vues/v_listeFiches.php';
             require_once __DIR__.'/../vues/v_pied.php';
             $view = ob_get_clean();
             return $view;
