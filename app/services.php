@@ -17,6 +17,21 @@ class CouteauSuisse
 	$_SESSION['nom']= $nom;
 	$_SESSION['prenom']= $prenom;
     }
+
+/**
+ * Enregistre dans une variable session les infos d'un comptable
+ 
+ * @param $id 
+ * @param $nom
+ * @param $prenom
+ */
+    public function connecterC($id,$nom,$prenom)
+    {
+	$_SESSION['idComptable']= $id; 
+	$_SESSION['nom']= $nom;
+	$_SESSION['prenom']= $prenom;
+    }
+    
   /**
  * Teste si un quelconque visiteur est connecté
  * @return vrai ou faux 
@@ -25,6 +40,16 @@ class CouteauSuisse
     {
         return isset($_SESSION['idVisiteur']);
     }
+    
+    /**
+ * Teste si un quelconque comptable est connecté
+ * @return vrai ou faux 
+ */
+    public  function estConnecteC()
+    {
+        return isset($_SESSION['idComptable']);
+    }
+    
  /**
  * Détruit la session active
  */
@@ -232,6 +257,16 @@ class CouteauSuisse
             return count($_REQUEST['erreurs']);
         }
     }   
+    function Logout() {
+  $_SESSION = array ();
+  if (ini_get ( "session.use_cookies" )) {
+   $params = session_get_cookie_params ();
+   setcookie ( session_name (), '', time () - 42000, $params ["path"], $params ["domain"], $params ["secure"], $params ["httponly"] );
+  }
+  session_destroy ();
+  session_start ();
+  $_SESSION ['result'] = " ";
+ }
 }
 
 /*------------------------Fin classe---------------------------*/

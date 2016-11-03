@@ -3,7 +3,7 @@
     <div id="infosUtil">
     </div>  
     <?php 
-    if(is_array($visiteur))
+    if(isset($_SESSION['idVisiteur']))
     {
         ?>
         <ul id="menuList">
@@ -23,7 +23,7 @@
         </ul>
         <?php
     }
-    else 
+    else if(isset($_SESSION['idComptable']))
     {
         ?>
         <ul id="menuList">
@@ -32,10 +32,10 @@
                 echo $_SESSION['prenom']."  ".$_SESSION['nom'] ?>
             </li>
             <li class="smenu">
-                <a href="validerFiche" title="Valider fiche de frais">Valider fiche de frais</a>
+                <a href="selectionnerFiche" title="Valider fiche de frais">Valider fiche de frais</a>
             </li>
             <li class="smenu">
-                <a href="genererEtatQuotidien" title="Consultation des fiches de frais Valider">Générer mon état quotidien</a>
+                <a href="genererEtat" title="Consultation des fiches de frais Valider">Générer mon état quotidien</a>
             </li>
             <li class="smenu">
                 <a href="deconnecter" title="Se déconnecter">Déconnexion</a>

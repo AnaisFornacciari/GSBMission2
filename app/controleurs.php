@@ -42,12 +42,12 @@ class ConnexionControleur{
             $id = $comptable['id'];
             $nom =  $comptable['nom'];
             $prenom = $comptable['prenom'];
-            $app['couteauSuisse']->connecter($id,$nom,$prenom);
+            $app['couteauSuisse']->connecterC($id,$nom,$prenom);
             require_once __DIR__.'/../vues/v_sommaire.php';
             require_once __DIR__.'/../vues/v_pied.php';
             $view = ob_get_clean();
         }
-	else if (is_array( $visiteur ))
+	else if (is_array($visiteur))
         {
             $id = $visiteur['id'];
             $nom =  $visiteur['nom'];
@@ -62,7 +62,8 @@ class ConnexionControleur{
     public function deconnecter(Application $app)
     {
         $app['couteauSuisse']->deconnecter();
-       return $app->redirect('http://localhost/silexGSB_V2/silexGSB/public/');
+        $app['couteauSuisse']->Logout();
+        return $app->redirect('http://localhost/silexGSB_V2/silexGSB/public/');       
     }
 }
 //**************************************Contrôleur EtatFrais**********************
@@ -78,7 +79,6 @@ class EtatFraisControleur
         ob_start();             // démarre le flux de sortie
         require_once __DIR__.'/../vues/v_entete.php';
         require_once __DIR__.'/../vues/v_sommaire.php';
-        
     }
     public function selectionnerMois(Application $app)
     {
@@ -216,6 +216,43 @@ Class GestionFicheFraisControleur
         
     }
 }
- 
+//************************************Controleur GererFicheFrais********************
+
+Class ValiderFicheFraisControleur
+{
+    private $idComptable;
+    private $pdo;
+    
+    public function init()
+    {
+        $this->idComptable = $_SESSION['idComptable'];
+        $this->pdo = PdoGsb::getPdoGsb();
+        ob_start();             // démarre le flux de sortie
+        require_once __DIR__.'/../vues/v_entete.php';
+        require_once __DIR__.'/../vues/v_sommaire.php';
+    }
+    public function selectionnerFiche(Application $app)
+    {
+        session_start();
+        if($app['couteauSuisse']->estConnecteC())
+        {
+            $this->init();
+            $lesMois = $this->pdo->getLesMoisDisponibles($this->idVisiteur);
+            // Afin de sélectionner par défaut le dernier mois dans la zone de liste
+            // on demande toutes les clés, et on prend la première,
+            // les mois étant triés décroissants
+            $lesCles = array_keys( $lesMois );
+            $moisASelectionner = $lesCles[0];
+            require_once __DIR__.'/../vues/v_listeMois.php';
+             require_once __DIR__.'/../vues/v_pied.php';
+            $view = ob_get_clean();
+            return $view;
+        }
+        else
+        {
+            return Response::HTTP_NOT_FOUND;
+        }
+    }
+}
 ?>
 
