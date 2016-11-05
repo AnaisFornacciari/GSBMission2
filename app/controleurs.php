@@ -253,6 +253,22 @@ Class ValiderFicheFraisControleur
             return $response;
         }
     }
+    public function voirFiche(Request $request,Application $app)
+    {
+        //JENIKSAN
+    }
+    public function validerFiche(Request $request,Application $app)
+    {
+        
+    }
+}
+
+Class GenererEtatQuotidientControleur
+{
+    public function genererEtat(Application $app)
+    {
+        
+    }
 }
 ?>
 

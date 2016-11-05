@@ -263,7 +263,7 @@ class PdoGsb
         
         
 /**
- * Retourne les dates pour lesquel un visiteur peut avoir une fiche de frais
+ * Retourne les dates pour lesquelles un visiteur quelconque PEUT avoir une fiche de frais : première date de la base de donnée (2014-01) à aujourd'hui sous le format "yyyy-mm"
  
  * @return un tableau associatif de clé un mois -aaaamm- et de valeurs l'année et le mois correspondant 
 */
@@ -272,19 +272,19 @@ class PdoGsb
             $req = "select min(mois) as mois from fichefrais";
             $res = PdoGsb::$monPdo->query($req);
             $debut = $res->fetch();
-            $deb = date("Y-m", strtotime($debut['mois']));
-            $today = date("Y-m");
+            $deb = date("Y-m", strtotime($debut['mois'])); //transforme $debut (char(6)) en dateTime
+            $today = date("Y-m"); //date système
             $lesMois = array();
             $date = $deb;
             while ($deb < $today)
             {
-                $numAnnee = substr($date,0,4);
-                $numMois = substr($date,4,2);
+                $numAnnee = substr($date,0,4); //découpe la date pour avoir l'année
+                $numMois = substr($date,4,2); //déoupe la date pour avoir le mois
                 $lesMois["$date"]=array(
                 "date" => "$date",
-                "numAnnee" => "$numAnnee",
-                "numMois" => "$numMois");
-                $date = date("Y-m", strtotime($date . '+1 month'));
+                "numAnnee" => "$numAnnee", 
+                "numMois" => "$numMois"); 
+                $date = date("Y-m", strtotime($date . '+1 month')); //incrémente la date d'un mois
             }
             return $lesMois;
 	}
