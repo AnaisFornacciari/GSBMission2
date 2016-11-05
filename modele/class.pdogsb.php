@@ -55,7 +55,7 @@ class PdoGsb
 	}
         
 /**
- * Retourne les informations d'un visiteur
+ * Retourne les informations d'un visiteur / comptable
  
  * @param $login 
  * @param $mdp
@@ -259,6 +259,47 @@ class PdoGsb
             $req = "update ficheFrais set idEtat = '$etat', dateModif = now() 
             where fichefrais.idvisiteur ='$idVisiteur' and fichefrais.mois = '$mois'";
             PdoGsb::$monPdo->exec($req);
+	}
+        
+        
+/**
+ * Retourne les dates pour lesquel un visiteur peut avoir une fiche de frais
+ 
+ * @return un tableau associatif de clé un mois -aaaamm- et de valeurs l'année et le mois correspondant 
+*/
+	public function getLesDates()
+        {
+            $req = "select min(mois) as mois from fichefrais";
+            $res = PdoGsb::$monPdo->query($req);
+            $debut = $res->fetch();
+            $deb = date("Y-m", strtotime($debut['mois']));
+            $today = date("Y-m");
+            $lesMois = array();
+            $date = $deb;
+            while ($deb < $today)
+            {
+                $numAnnee = substr($date,0,4);
+                $numMois = substr($date,4,2);
+                $lesMois["$date"]=array(
+                "date" => "$date",
+                "numAnnee" => "$numAnnee",
+                "numMois" => "$numMois");
+                $date = date("Y-m", strtotime($date . '+1 month'));
+            }
+            return $lesMois;
+	}
+        
+/**
+ * Retourne les visiteurs
+
+ * @return l'id, le nom et le prénom sous la forme d'un tableau associatif 
+*/
+	public function getVisiteurs()
+        {
+            $req = "select id, nom, prenom from visiteur";
+            $res = PdoGsb::$monPdo->query($req);
+            $lesVisiteurs = $res->fetchAll();
+            return $lesVisiteurs;
 	}
 }
 ?>

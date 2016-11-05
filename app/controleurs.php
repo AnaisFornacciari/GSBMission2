@@ -99,7 +99,9 @@ class EtatFraisControleur
         }
         else
         {
-            return Response::HTTP_NOT_FOUND;
+            $response = new response ();
+            $response->setContent ( 'Connexion nécessaire' );
+            return $response;
         }
     }
     public function voirFrais(Request $request,Application $app)
@@ -237,12 +239,8 @@ Class ValiderFicheFraisControleur
         if($app['couteauSuisse']->estConnecteC())
         {
             $this->init();
-            $lesMois = $this->pdo->getLesMoisDisponibles($this->idVisiteur);
-            // Afin de sélectionner par défaut le dernier mois dans la zone de liste
-            // on demande toutes les clés, et on prend la première,
-            // les mois étant triés décroissants
-            $lesCles = array_keys( $lesMois );
-            $moisASelectionner = $lesCles[0];
+            $lesMois = $this->pdo->getLesDates();
+            $lesVisiteurs = $this->pdo->getVisiteurs();
             require_once __DIR__.'/../vues/v_listeFiches.php';
             require_once __DIR__.'/../vues/v_pied.php';
             $view = ob_get_clean();
@@ -250,7 +248,9 @@ Class ValiderFicheFraisControleur
         }
         else
         {
-            return Response::HTTP_NOT_FOUND;
+            $response = new response ();
+            $response->setContent ( 'Connexion nécessaire' );
+            return $response;
         }
     }
 }

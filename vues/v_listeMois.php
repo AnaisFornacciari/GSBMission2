@@ -1,6 +1,6 @@
 <div id="contenu">
     <h2>Mes fiches de frais</h2>
-    <h3>Mois à sélectionner : </h3>
+    <h3>Date à sélectionner : </h3>
     <form action="voirFrais" method="post">
         <div class="corpsForm">
             <p>
