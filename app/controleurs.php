@@ -209,7 +209,7 @@ Class GestionFicheFraisControleur
             $view = ob_get_clean();
             return $view; 
         }
-         else
+        else
         {
             $response = new Response();
             $response->setContent('Connexion nécessaire');

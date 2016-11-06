@@ -272,20 +272,20 @@ class PdoGsb
             $req = "select min(mois) as mois from fichefrais";
             $res = PdoGsb::$monPdo->query($req);
             $debut = $res->fetch();
-            $date = DateTime::createFromFormat('Y-m', (string)$debut['mois']); //transforme $debut en dateTime
-            $today = date('Y-m'); //date système
-            echo date_format($date, 'Y-m');
-            echo date_format($today, 'Y-m');
+            $numAnnee = substr($debut['mois'],0,4);
+            $numMois = substr($debut['mois'],4,2);
+            $date = $numAnnee."-".$numMois;
+            $date = DateTime::createFromFormat('Y-m', $date); //transforme $debut en dateTime
+            $today = new DateTime(date('Y-m')); //date système
             $lesMois = array();
-            while ($date < $today)
+            while ($date <= $today)
             {
-                $numAnnee = substr($date,0,4); //découpe la date pour avoir l'année
-                $numMois = substr($date,4,2); //déoupe la date pour avoir le mois
-                $lesMois["$date"]=array(
-                "date" => "$date",
+                $numAnnee =  $date->format("Y"); //découpe la date pour avoir l'année
+                $numMois = $date->format("m"); //déoupe la date pour avoir le mois
+                $lesMois["$numAnnee.$numMois"]=array(
                 "numAnnee" => "$numAnnee", 
-                "numMois" => "$numMois"); 
-                $date = date('Y-m', strtotime($date . '+1 month')); //incrémente la date d'un mois
+                "numMois" => "$numMois");
+                $date->modify("+1 month"); //incrémente la date d'un mois
             }
             return $lesMois;
 	}

@@ -26,7 +26,7 @@
                         foreach ($lesMois as $unMois)
                         {
                             ?>
-                            <option selected value="<?php echo $unMois['date'] ?>"><?php echo  $unMois['numMois']."/".$unMois['numMois'] ?> </option>
+                            <option selected value="<?php echo $unMois['numMois'].$unMois['numMois'] ?>"><?php echo  $unMois['numAnnee']."/".$unMois['numMois'] ?> </option>
                             <?php
                         }
                         ?>    
