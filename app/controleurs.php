@@ -5,7 +5,7 @@ use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 //********************************************Contrôleur connexion*****************//
-class ConnexionControleur{
+Class ConnexionControleur{
 
     public function __construct()
     {
@@ -68,7 +68,7 @@ class ConnexionControleur{
 }
 //**************************************Contrôleur EtatFrais**********************
 
-class EtatFraisControleur 
+Class EtatFraisControleur 
 {
     private $idVisiteur;
     private $pdo;
@@ -255,13 +255,29 @@ Class ValiderFicheFraisControleur
     }
     public function voirFiche(Request $request,Application $app)
     {
-        //JENIKSAN
+        session_start();
+        if($app['couteauSuisse']->estConnecteC())
+        {
+            $this->init();
+            $laFiche = $this->pdo->getLesFraisForfait();
+            require_once __DIR__.'/../vues/v_findFiche.php';
+            require_once __DIR__.'/../vues/v_pied.php';
+            $view = ob_get_clean();
+            return $view;
+        }
+        else
+        {
+            $response = new response ();
+            $response->setContent ( 'Connexion nécessaire' );
+            return $response;
+        }
     }
     public function validerFiche(Request $request,Application $app)
     {
         
     }
 }
+//************************************Controleur GenererEtatQuotidient********************
 
 Class GenererEtatQuotidientControleur
 {

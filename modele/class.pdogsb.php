@@ -272,11 +272,12 @@ class PdoGsb
             $req = "select min(mois) as mois from fichefrais";
             $res = PdoGsb::$monPdo->query($req);
             $debut = $res->fetch();
-            $deb = date("Y-m", strtotime($debut['mois'])); //transforme $debut (char(6)) en dateTime
-            $today = date("Y-m"); //date système
+            $date = DateTime::createFromFormat('Y-m', (string)$debut['mois']); //transforme $debut en dateTime
+            $today = date('Y-m'); //date système
+            echo date_format($date, 'Y-m');
+            echo date_format($today, 'Y-m');
             $lesMois = array();
-            $date = $deb;
-            while ($deb < $today)
+            while ($date < $today)
             {
                 $numAnnee = substr($date,0,4); //découpe la date pour avoir l'année
                 $numMois = substr($date,4,2); //déoupe la date pour avoir le mois
@@ -284,7 +285,7 @@ class PdoGsb
                 "date" => "$date",
                 "numAnnee" => "$numAnnee", 
                 "numMois" => "$numMois"); 
-                $date = date("Y-m", strtotime($date . '+1 month')); //incrémente la date d'un mois
+                $date = date('Y-m', strtotime($date . '+1 month')); //incrémente la date d'un mois
             }
             return $lesMois;
 	}
