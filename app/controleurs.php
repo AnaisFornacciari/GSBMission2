@@ -18,7 +18,7 @@ Class ConnexionControleur{
         require_once __DIR__.'/../vues/v_connexion.php';
         require_once __DIR__.'/../vues/v_pied.php';
         $view = ob_get_clean(); // récupère le contenu du flux et le vide
-        return $view;     // retourne le flux 
+        return $view;           // retourne le flux 
     }
     
     public function verifierUser(Request $request, Application $app)
@@ -259,16 +259,42 @@ Class ValiderFicheFraisControleur
         if($app['couteauSuisse']->estConnecteC())
         {
             $this->init();
-            $laFiche = $this->pdo->getLesFraisForfait();
-            require_once __DIR__.'/../vues/v_findFiche.php';
-            require_once __DIR__.'/../vues/v_pied.php';
+            $lesMois = $this->pdo->getLesDates();
+            $lesVisiteurs = $this->pdo->getVisiteurs();
+            $leVisiteur = $request->get('lstVisiteurs');
+            $leMois = $request->get('lstMois');
+            $numAnnee = substr($leMois,0,4);
+            $numMois = substr($leMois,4,2);
+            $lesInfosFicheFrais = $this->pdo->getLesInfosFicheFraisRB($leVisiteur,$leMois);
+            if($lesInfosFicheFrais)
+            {
+                $lesFraisForfait= $this->pdo->getLesFraisForfait($leVisiteur,$leMois);
+                $libEtat = $lesInfosFicheFrais['libEtat'];
+                $montantValide = $lesInfosFicheFrais['montantValide'];
+                $nbJustificatifs = $lesInfosFicheFrais['nbJustificatifs'];
+                $dateModif =  $lesInfosFicheFrais['dateModif'];
+                $dateModif =  $app['couteauSuisse']->dateAnglaisVersFrancais($dateModif);
+                $leVisiteur = $this->pdo->getInfosVisiteurID($leVisiteur);
+                require_once __DIR__.'/../vues/v_listeFiches.php';
+                require_once __DIR__.'/../vues/v_findFiche.php';
+                require_once __DIR__.'/../vues/v_pied.php';
+            }
+            else
+            {
+                
+                $leVisiteur = $this->pdo->getInfosVisiteurID($leVisiteur);
+                $app ['couteauSuisse']->ajouterErreur("Il n'existe pas de fiche de frais à valider pour " . $leVisiteur['nom'] . " " . $leVisiteur['prenom'] . " le " . $numMois . "-" . $numAnnee);
+                require_once __DIR__.'/../vues/v_listeFiches.php';
+                require_once __DIR__.'/../vues/v_erreurs.php';
+                require_once __DIR__.'/../vues/v_pied.php';
+            }
             $view = ob_get_clean();
             return $view;
-        }
+         }
         else
         {
-            $response = new response ();
-            $response->setContent ( 'Connexion nécessaire' );
+            $response = new Response();
+            $response->setContent('Connexion nécessaire');
             return $response;
         }
     }

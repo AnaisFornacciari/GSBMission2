@@ -277,6 +277,8 @@ class PdoGsb
             $date = $numAnnee."-".$numMois;
             $date = DateTime::createFromFormat('Y-m', $date); //transforme $debut en dateTime
             $today = new DateTime(date('Y-m')); //date système
+            $today->modify("+1 month");
+            //echo date_format($today, 'Y-m');
             $lesMois = array();
             while ($date <= $today)
             {
@@ -301,6 +303,38 @@ class PdoGsb
             $res = PdoGsb::$monPdo->query($req);
             $lesVisiteurs = $res->fetchAll();
             return $lesVisiteurs;
+	}
+        
+/**
+ * Retourne les informations d'une fiche de frais remboursé d'un visiteur pour un mois donné
+ 
+ * @param $idVisiteur 
+ * @param $mois sous la forme aaaamm
+ * @return un tableau avec des champs de jointure entre une fiche de frais et la ligne d'état 
+*/	
+	public function getLesInfosFicheFraisRB($idVisiteur,$mois)
+        {
+            $req = "select fichefrais.idEtat as idEtat, fichefrais.dateModif as dateModif, fichefrais.nbJustificatifs as nbJustificatifs, 
+            fichefrais.montantValide as montantValide, etat.libelle as libEtat from  fichefrais inner join etat on fichefrais.idEtat = etat.id 
+            where fichefrais.idvisiteur ='$idVisiteur' and fichefrais.mois = '$mois' and fichefrais.idEtat = 'RB';";
+            $res = PdoGsb::$monPdo->query($req);
+            $laLigne = $res->fetch();
+            return $laLigne;
+	}
+        
+/**
+ * Retourne les informations d'un visiteur
+ 
+ * @param $id
+ * @return toutes les infos sous la forme d'un tableau associatif 
+*/
+	public function getInfosVisiteurID($id)
+        {
+            $req = "select * from visiteur 
+            where id='$id'";
+            $rs = PdoGsb::$monPdo->query($req);
+            $ligne = $rs->fetch();
+            return $ligne;
 	}
 }
 ?>

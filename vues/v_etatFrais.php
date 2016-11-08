@@ -7,7 +7,7 @@
   	<caption>Eléments forfaitisés </caption>
         <tr>
             <?php
-            foreach ( $lesFraisForfait as $unFraisForfait ) 
+            foreach ($lesFraisForfait as $unFraisForfait) 
             {
 		$libelle = $unFraisForfait['libelle'];
 		?>	
@@ -18,7 +18,7 @@
 	</tr>
         <tr>
             <?php
-            foreach (  $lesFraisForfait as $unFraisForfait  ) 
+            foreach ($lesFraisForfait as $unFraisForfait) 
             {
 		$quantite = $unFraisForfait['quantite'];
 		?>
@@ -28,9 +28,6 @@
             ?>
             </tr>
     </table>
-  	
-    </table>
-</div>
 </div>
  
 

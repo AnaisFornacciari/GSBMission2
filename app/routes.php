@@ -12,7 +12,7 @@ $app->match('/saisirFrais', "GestionFicheFraisControleur::saisirFrais");
 $app->match('/validerFrais', "GestionFicheFraisControleur::validerFrais");
 
 $app->match('/selectionnerFiche', "ValiderFicheFraisControleur::selectionnerFiche");
-$app->match('/voirFiche', "VoirFicheFraisControleur::voirFiche");
+$app->match('/voirFiche', "ValiderFicheFraisControleur::voirFiche");
 $app->match('/validerFiche', "ValiderFicheFraisControleur::validerFiche");
 
 $app->match('/genererEtat', "GenererEtatQuotidientControleur::genererEtat");

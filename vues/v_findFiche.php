@@ -1,30 +1,32 @@
-<div id="contenu">
-    <h2>Fiche de frais du mois <?php echo $numMois."-".$numAnnee ?> pour <?php echo "nom du visiteur, ne t'en occupes pas le formulaire d'avant ne marche pas" ?> </h2>
-    <form method="POST"  action="validerFrais">
-        <div class="corpsForm">
-            <fieldset>
-                <legend>Eléments forfaitisés</legend>
-                <?php
-		foreach ($lesFraisForfait as $unFrais)
-		{
-                    $idFrais = $unFrais['idfrais'];
-                    $libelle = $unFrais['libelle'];
-                    $quantite = $unFrais['quantite'];
-                    ?>
-                    <p>
-                        <label for="idFrais"><?php echo $libelle ?></label>
-                        <input type="text" id="idFrais" name="lesFrais[<?php echo $idFrais?>]" size="10" maxlength="5" value="<?php echo $quantite?>" >
-                    </p>
-                    <?php
-		}
+<h3>Fiche de frais du mois <?php echo $numMois."-".$numAnnee ?> pour <?php echo $leVisiteur['nom']." ".$leVisiteur['prenom'] ?> </h3>
+<div class="encadre">
+    <p>
+        Etat : <?php echo $libEtat?> depuis le <?php echo $dateModif?> <br> Montant validé : <?php echo $montantValide?>
+    </p>
+    <table class="listeLegere">
+  	<caption>Eléments forfaitisés </caption>
+        <tr>
+            <?php
+            foreach ($lesFraisForfait as $unFraisForfait) 
+            {
+		$libelle = $unFraisForfait['libelle'];
 		?>	
-            </fieldset>
-        </div>
-        <div class="piedForm">
-            <p>
-                <input id="ok" type="submit" value="Valider" size="20" />
-                <input id="annuler" type="reset" value="Effacer" size="20" />
-            </p> 
-        </div>
-    </form>
-  
+		<th> <?php echo $libelle?> </th>
+		<?php
+            }
+            ?>
+	</tr>
+        <tr>
+            <?php
+            foreach ($lesFraisForfait as $unFraisForfait) 
+            {
+		$quantite = $unFraisForfait['quantite'];
+		?>
+                <td class="qteForfait"> <?php echo $quantite?> </td>
+		<?php
+            }
+            ?>
+            </tr>
+    </table>
+</div>
+ 
