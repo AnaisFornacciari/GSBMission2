@@ -331,5 +331,4 @@ Class CouteauSuisse
 $app['couteauSuisse'] = function ()
 {
     return new CouteauSuisse();
-}
-;
+};

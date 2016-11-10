@@ -265,7 +265,7 @@ Class ValiderFicheFraisControleur
             $leMois = $request->get('lstMois');
             $numAnnee = substr($leMois,0,4);
             $numMois = substr($leMois,4,2);
-            $lesInfosFicheFrais = $this->pdo->getLesInfosFicheFraisRB($leVisiteur,$leMois);
+            $lesInfosFicheFrais = $this->pdo->getLesInfosFicheFraisCR($leVisiteur,$leMois);
             if($lesInfosFicheFrais)
             {
                 $lesFraisForfait= $this->pdo->getLesFraisForfait($leVisiteur,$leMois);
@@ -309,7 +309,15 @@ Class GenererEtatQuotidientControleur
 {
     public function genererEtat(Application $app)
     {
-        
+        $rep = $this->getResponse('tcpdf');
+        $rep->outputFileName = 'article.pdf';
+        $rep->doDownload = true;
+        // initialize l'objet tcpdf
+        $rep->tcpdf = new MyTcPdf();
+        $rep->tcpdf->AddPage();
+        $rep->tcpdf->SetTitle('Etat quotidient');
+        $rep->tcpdf->Text(10,10,'un texte');
+        return $rep;
     }
 }
 ?>

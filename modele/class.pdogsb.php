@@ -280,7 +280,7 @@ class PdoGsb
             $today->modify("+1 month");
             //echo date_format($today, 'Y-m');
             $lesMois = array();
-            while ($date <= $today)
+            while ($date < $today)
             {
                 $numAnnee =  $date->format("Y"); //découpe la date pour avoir l'année
                 $numMois = $date->format("m"); //déoupe la date pour avoir le mois
@@ -312,11 +312,11 @@ class PdoGsb
  * @param $mois sous la forme aaaamm
  * @return un tableau avec des champs de jointure entre une fiche de frais et la ligne d'état 
 */	
-	public function getLesInfosFicheFraisRB($idVisiteur,$mois)
+	public function getLesInfosFicheFraisCR($idVisiteur,$mois)
         {
             $req = "select fichefrais.idEtat as idEtat, fichefrais.dateModif as dateModif, fichefrais.nbJustificatifs as nbJustificatifs, 
             fichefrais.montantValide as montantValide, etat.libelle as libEtat from  fichefrais inner join etat on fichefrais.idEtat = etat.id 
-            where fichefrais.idvisiteur ='$idVisiteur' and fichefrais.mois = '$mois' and fichefrais.idEtat = 'RB';";
+            where fichefrais.idvisiteur ='$idVisiteur' and fichefrais.mois = '$mois' and fichefrais.idEtat = 'CR';";
             $res = PdoGsb::$monPdo->query($req);
             $laLigne = $res->fetch();
             return $laLigne;
