@@ -300,7 +300,35 @@ Class ValiderFicheFraisControleur
     }
     public function validerFiche(Request $request,Application $app)
     {
-        
+         session_start();
+        if($app['couteauSuisse']->estConnecteC())
+        {
+            $this->init();
+            $lesFrais = $request->get('lesFrais');
+            $idVisiteur = $request->get('leVisiteur');
+            $mois = $request->get('leMois');
+            
+            if($app['couteauSuisse']->lesQteFraisValides($lesFrais))
+            {
+                $this->pdo->majFraisForfait($idVisiteur,$mois,$lesFrais);
+                 $this->pdo->majFicheFrais($idVisiteur,$mois,"RB",$lesFrais);
+            }
+            else
+            {
+                $app['couteauSuisse']->ajouterErreur("Les valeurs des frais doivent être numériques");
+                require_once __DIR__.'/../vues/v_erreurs.php';
+                require_once __DIR__.'/../vues/v_pied.php';
+            }
+            
+            $view = ob_get_clean();
+            return $view;
+         }
+        else
+        {
+            $response = new Response();
+            $response->setContent('Connexion nécessaire');
+            return $response;
+        }
     }
 }
 //************************************Controleur GenererEtatQuotidient********************

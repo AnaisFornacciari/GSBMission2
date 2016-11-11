@@ -68,6 +68,8 @@ class PdoGsb
             $rs = PdoGsb::$monPdo->query($req);
             $ligne = $rs->fetch();
             return $ligne;
+            
+             
 	}
 
 	public function getInfosComptable($login, $mdp)
@@ -336,5 +338,18 @@ class PdoGsb
             $ligne = $rs->fetch();
             return $ligne;
 	}
+        
+        public function majFicheFrais($idVisiteur,$mois,$etat)
+        {
+           $req1 = "select sum(F.montant * L.quantite)as 'total' from lignefraisforfait L inner join fraisforfait F on L.idFraisForfait = F.id where idVisiteur = '$idVisiteur' and mois = '$mois' group by idVisiteur";
+            $rs = PdoGsb::$monPdo->query($req1);
+            $ligne = $rs->fetch();
+        $ligneF= $ligne['total'];
+            $req = "update ficheFrais set idEtat = '$etat', dateModif = now(), montantValide='$ligneF'
+            where fichefrais.idvisiteur ='$idVisiteur' and fichefrais.mois = '$mois'";
+            PdoGsb::$monPdo->exec($req);            
+	}
+        
+      
 }
 ?>
