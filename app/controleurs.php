@@ -218,7 +218,7 @@ Class GestionFicheFraisControleur
         
     }
 }
-//************************************Controleur GererFicheFrais********************
+//************************************Controleur ValiderFicheFrais********************
 
 Class ValiderFicheFraisControleur
 {
@@ -411,7 +411,7 @@ Class GenererEtatQuotidientControleur
             }
             else
             {
-                $app ['couteauSuisse']->ajouterErreur("Aucune fiche de frais n'a été validée ce jour-ci.");
+                $app ['couteauSuisse']->ajouterErreur("Aucune fiche de frais n'a été validée à ce jour.");
                 require_once __DIR__.'/../vues/v_erreurs.php';
                 require_once __DIR__.'/../vues/v_pied.php';
                 $view = ob_get_clean();

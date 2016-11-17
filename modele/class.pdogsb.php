@@ -150,7 +150,6 @@ class PdoGsb
                 // insertion d'une ligne
                 $req->execute();
             }
-            echo $idVisiteur;
 	}
 
 /**
