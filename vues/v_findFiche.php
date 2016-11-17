@@ -31,7 +31,7 @@
                     }
                     ?>
                 <input type="hidden" id="idVisiteur" name="leVisiteur" value="<?php echo $leVisiteur['id']?>" >
-                <input type="hidden" id="mois" name="leMois" value="<?php echo $leMois ?>" >
+                <input type="hidden" id="mois" name="leMois" value="<?php echo $leMois?>" >
                     </tr>
             </table>
     

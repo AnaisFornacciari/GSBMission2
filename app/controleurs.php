@@ -24,8 +24,8 @@ Class ConnexionControleur{
     public function verifierUser(Request $request, Application $app)
     {
         session_start();
-        $login = $request->get('login');
-	$mdp = $request->get('mdp');
+        $login = htmlentities($request->get('login'));
+	$mdp = htmlentities($request->get('mdp'));
         $pdo = PdoGsb::getPdoGsb();
 	$visiteur = $pdo->getInfosVisiteur($login,$mdp);
         $comptable = $pdo->getInfosComptable($login,$mdp);
@@ -63,7 +63,7 @@ Class ConnexionControleur{
     {
         $app['couteauSuisse']->deconnecter();
         $app['couteauSuisse']->Logout();
-        return $app->redirect('http://localhost/silexGSB_V2/silexGSB/public/');       
+        return $app->redirect('index.php');       
     }
 }
 //**************************************Contrôleur EtatFrais**********************
@@ -110,7 +110,7 @@ Class EtatFraisControleur
         if($app['couteauSuisse']->estConnecte())
         {
             $this->init();
-            $leMois = $request->get('lstMois');
+            $leMois = htmlentities($request->get('lstMois'));
             $this->pdo = PdoGsb::getPdoGsb();
             $lesMois = $this->pdo->getLesMoisDisponibles($this->idVisiteur);
             $moisASelectionner = $leMois;
@@ -190,14 +190,14 @@ Class GestionFicheFraisControleur
         if($app['couteauSuisse']->estConnecte())
         {
             $this->init($app);
-            $lesFrais = $request->get('lesFrais');
+            $lesFrais = htmlentities($request->get('lesFrais'));
             if($app['couteauSuisse']->lesQteFraisValides($lesFrais))
             {
                 $this->pdo->majFraisForfait($this->idVisiteur,$this->mois,$lesFrais);
             }
             else
             {
-                $app['couteauSuisse']->ajouterErreur("Les valeurs des frais doivent être numériques");
+                $app['couteauSuisse']->ajouterErreur("Les valeurs des frais doivent être numériques.");
                 require_once __DIR__.'/../vues/v_erreurs.php';
                 require_once __DIR__.'/../vues/v_pied.php';
             }
@@ -307,22 +307,30 @@ Class ValiderFicheFraisControleur
             $lesFrais = $request->get('lesFrais');
             $idVisiteur = $request->get('leVisiteur');
             $mois = $request->get('leMois');
-            
+            $lesMois = $this->pdo->getLesDates();
+            $lesVisiteurs = $this->pdo->getVisiteurs();
+            $numAnnee = substr($mois,0,4);
+            $numMois = substr($mois,4,2);
+            $leVisiteur = $this->pdo->getInfosVisiteurID($idVisiteur);
             if($app['couteauSuisse']->lesQteFraisValides($lesFrais))
             {
                 $this->pdo->majFraisForfait($idVisiteur,$mois,$lesFrais);
-                 $this->pdo->majFicheFrais($idVisiteur,$mois,"RB",$lesFrais);
+                $this->pdo->majFicheFrais($idVisiteur,$mois,"VA",$lesFrais);
+                $app['couteauSuisse']->ajouterSucess("Fiche de frais du mois " . $numMois . "-" . $numAnnee . " pour " . $leVisiteur['nom'] . " " . $leVisiteur['prenom'] . " validée !");
+                require_once __DIR__.'/../vues/v_listeFiches.php';
+                require_once __DIR__.'/../vues/v_sucess.php';
+                require_once __DIR__.'/../vues/v_pied.php';
             }
             else
             {
-                $app['couteauSuisse']->ajouterErreur("Les valeurs des frais doivent être numériques");
+                $app['couteauSuisse']->ajouterErreur("Les valeurs des frais doivent être numériques.");
+                require_once __DIR__.'/../vues/v_listeFiches.php';
                 require_once __DIR__.'/../vues/v_erreurs.php';
                 require_once __DIR__.'/../vues/v_pied.php';
             }
-            
             $view = ob_get_clean();
             return $view;
-         }
+        }
         else
         {
             $response = new Response();
@@ -335,17 +343,87 @@ Class ValiderFicheFraisControleur
 
 Class GenererEtatQuotidientControleur
 {
+    private $idComptable;
+    private $pdo;
+    
+    public function init()
+    {
+        $this->idComptable = $_SESSION['idComptable'];
+        $this->pdo = PdoGsb::getPdoGsb();
+        ob_start();             // démarre le flux de sortie
+        require_once __DIR__.'/../vues/v_entete.php';
+        require_once __DIR__.'/../vues/v_sommaire.php';
+    }
+    
     public function genererEtat(Application $app)
     {
-        $rep = $this->getResponse('tcpdf');
-        $rep->outputFileName = 'article.pdf';
-        $rep->doDownload = true;
-        // initialize l'objet tcpdf
-        $rep->tcpdf = new MyTcPdf();
-        $rep->tcpdf->AddPage();
-        $rep->tcpdf->SetTitle('Etat quotidient');
-        $rep->tcpdf->Text(10,10,'un texte');
-        return $rep;
+        session_start();
+        if($app['couteauSuisse']->estConnecteC())
+        {
+            $this->init($app);
+            $date = (new DateTime(date("Y-m-d")))->format("Y-m-d");
+            $lesInfosFicheFrais = $this->pdo->getLesInfosFicheFraisVA($date);
+            if($lesInfosFicheFrais)
+            {
+                $tableauFiches = " <h3> Fiches de frais validées le " .$date. " : </h3> <br/><br/> ";
+                foreach ($lesInfosFicheFrais as $InfosFicheFrais) 
+                {
+                    $leVisiteur = $InfosFicheFrais['idVisiteur'];
+                    $leMois = $InfosFicheFrais['mois'];
+                    $numAnnee = substr($leMois,0,4);
+                    $numMois = substr($leMois,4,2);
+                    $lesFraisForfait= $this->pdo->getLesFraisForfait($leVisiteur,$leMois);
+                    $nomVisiteur = $InfosFicheFrais['nom'];
+                    $prenomVisiteur = $InfosFicheFrais['prenom'];
+                    $libEtat = $InfosFicheFrais['libEtat'];
+                    $montantValide = $InfosFicheFrais['montantValide'];
+                    $nbJustificatifs = $InfosFicheFrais['nbJustificatifs'];
+                    $tableauFiches = $tableauFiches. "
+                        <p>
+                            Fiche de ".$nomVisiteur." ".$prenomVisiteur. " créé le : " .$numMois."-".$numAnnee. " <br/> Montant validé : " .$montantValide."€
+                        </p>
+                        <table cellspacing='0' cellpadding='1' border='1'>
+                            <caption> Eléments forfaitisés </caption><br/>
+                            <tr>";
+                                foreach ($lesFraisForfait as $unFraisForfait) 
+                                {
+                                    $libelle = $unFraisForfait['libelle'];
+                                    $tableauFiches = $tableauFiches. " <th> " .$libelle. " </th> ";
+                                }
+                                $tableauFiches =
+                            $tableauFiches .
+                            "</tr>
+                            <tr>";
+                                foreach ($lesFraisForfait as $unFraisForfait) 
+                                {
+                                    $quantite = $unFraisForfait['quantite'];
+                                    $tableauFiches = $tableauFiches. " <td> " .$quantite. " </td> ";
+                                }
+                                $tableauFiches = $tableauFiches. 
+                            "</tr>
+                        </table>
+                        <br/><br/>
+                    ";
+                }
+                ob_end_clean();
+                $view = ob_get_clean();
+                $app['couteauSuisse']->htmlToTPdf($tableauFiches,'Fiches_de_frais_du_jour');
+            }
+            else
+            {
+                $app ['couteauSuisse']->ajouterErreur("Aucune fiche de frais n'a été validée ce jour-ci.");
+                require_once __DIR__.'/../vues/v_erreurs.php';
+                require_once __DIR__.'/../vues/v_pied.php';
+                $view = ob_get_clean();
+            }
+            return $view;
+        }
+        else
+        {
+            $response = new Response();
+            $response->setContent('Connexion nécessaire');
+            return $response;
+        }
     }
 }
 ?>

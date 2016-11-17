@@ -32,10 +32,10 @@
                 echo $_SESSION['prenom']."  ".$_SESSION['nom'] ?>
             </li>
             <li class="smenu">
-                <a href="selectionnerFiche" title="Valider fiche de frais">Valider fiche de frais</a>
+                <a href="selectionnerFiche" title="Validation des fiches de frais">Valider fiche de frais</a>
             </li>
             <li class="smenu">
-                <a href="genererEtat" title="Consultation des fiches de frais Valider">Générer mon état quotidien</a>
+                <a href="genererEtat" title="Consultation des fiches de frais validées à ce jour">Générer l'état quotidien</a>
             </li>
             <li class="smenu">
                 <a href="deconnecter" title="Se déconnecter">Déconnexion</a>

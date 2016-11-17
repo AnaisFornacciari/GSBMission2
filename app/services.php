@@ -256,7 +256,38 @@ Class CouteauSuisse
             {
                 return count($_REQUEST['erreurs']);
             }
-        }   
+        }
+        
+        
+    /**
+     * Ajoute le libellé d'un "sucess" au tableau des "sucess" 
+
+     * @param $msg : le libellé du "sucess"
+     */
+        function ajouterSucess($msg){
+           if (! isset($_REQUEST['sucess']))
+            {
+              $_REQUEST['sucess']=array();
+            } 
+           $_REQUEST['sucess'][]=$msg;
+        }
+        
+    /**
+     * Retoune le nombre de lignes du tableau des "sucess"
+
+     * @return le nombre de "sucess"
+     */
+        function nbSucess()
+        {
+           if (!isset($_REQUEST['sucess']))
+            {
+                return 0;
+            }
+            else
+            {
+                return count($_REQUEST['sucess']);
+            }
+        } 
 
         function Logout()
         {
